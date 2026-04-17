@@ -23,6 +23,8 @@ type
     Caption: string;
   end;
 
+  TOnException = procedure(const AException: Exception);
+
   TMainForm = class(TForm)
     MainEditor: TSynEdit;
     OpenDialog: TOpenDialog;
@@ -40,6 +42,7 @@ type
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   strict private
+    FOnException: TOnException;
     procedure CreateMenu;
     function CreateMainMenu: TMenuItem;
     procedure CreateMainMenuExitItem(const AItem: TMenuItem);
@@ -50,8 +53,12 @@ type
     procedure ExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
+    procedure DefaultOnException(const AEx: Exception);
   public
-
+    procedure Opendocument(const APath: string);
+    property OnException: TOnException
+             read FOnException
+             write FOnException;
   end;
 
 var
@@ -200,16 +207,35 @@ procedure TMainForm.OpenClick(Sender: TObject);
 begin
   OpenDialog.InitialDir := ExtractFilePath(ParamStr(0));
   OpenDialog.Filter:='Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
-  //OpenDialog.FileName:= '';
   if OpenDialog.Execute then
-  begin
-
-  end;
+    OpenDocument(OpenDialog.Filename);
 end;
 
 procedure TMainForm.SaveClick(Sender: TObject);
 begin
 
+end;
+
+procedure TMainForm.DefaultOnException(const AEx: Exception);
+begin
+  ShowMessage('Ошибка: ' + AEx.Message );
+end;
+
+procedure TMainForm.Opendocument(const APath: string);
+begin
+  MainEditor.BeginUpdate();
+  try
+    MainEditor.ClearAll;
+    try
+      MainEditor.Lines.LoadFromFile(APath);
+    except
+      on E: Exception do
+        if Assigned(FOnException) then
+          FOnException(E);
+    end;
+  finally
+    MainEditor.EndUpdate;
+  end;
 end;
 
 end.
