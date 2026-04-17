@@ -1,6 +1,6 @@
 unit Editor.MainForm;
 
-{$mode objfpc}{$H+}
+{$I 'editor.inc'}
 
 interface
 

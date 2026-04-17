@@ -1,6 +1,6 @@
 program Editor;
 
-{$mode objfpc}{$H+}
+{$I 'editor.inc'}
 
 uses
   {$IFDEF UNIX}
@@ -10,7 +10,8 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Editor.MainForm
+  Forms,
+  Editor.MainForm
   { you can add units after this };
 
 {$R *.res}
