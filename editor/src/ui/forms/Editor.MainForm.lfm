@@ -7,6 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 607
   ClientWidth = 973
   DesignTimePPI = 192
+  Font.Height = -24
   Menu = MainMenu
   LCLVersion = '4.4.0.0'
   OnCreate = FormCreate
@@ -22,8 +23,19 @@ object MainForm: TMainForm
     Header.Columns = <>
     Header.MainColumn = -1
     TabOrder = 0
+    OnFreeNode = VSTFreeNode
+    OnGetText = VSTGetText
+    OnGetNodeDataSize = VSTGetNodeDataSize
+    OnInitNode = VSTInitNode
   end
-  inline ElementEditor: TSynEdit
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 44
+    Top = 563
+    Width = 973
+    Panels = <>
+  end
+  inline MainEditor: TSynEdit
     Left = 248
     Height = 563
     Top = 0
@@ -35,11 +47,12 @@ object MainForm: TMainForm
     Font.Quality = fqNonAntialiased
     ParentColor = False
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 2
     Gutter.Width = 97
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
+    Highlighter = SynJScriptSyn
     Keystrokes = <    
       item
         Command = ecUp
@@ -465,7 +478,7 @@ object MainForm: TMainForm
     MouseTextActions = <>
     MouseSelActions = <>
     Lines.Strings = (
-      'ElementEditor'
+      'MainEditor'
     )
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
     SelectedColor.BackPriority = 50
@@ -530,15 +543,17 @@ object MainForm: TMainForm
       end
     end
   end
-  object StatusBar: TStatusBar
-    Left = 0
-    Height = 44
-    Top = 563
-    Width = 973
-    Panels = <>
-  end
   object MainMenu: TMainMenu
     Left = 24
+    Top = 16
+  end
+  object SynJScriptSyn: TSynJScriptSyn
+    DefaultFilter = 'Файлы Javascript (*.js)|*.js;JSON (*.json)|*.json'
+    Left = 152
+    Top = 16
+  end
+  object OpenDialog: TOpenDialog
+    Left = 88
     Top = 16
   end
 end

@@ -5,24 +5,51 @@ unit Editor.MainForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Menus,
-  laz.VirtualTrees, SynEdit;
+  Classes,
+  SysUtils,
+  Forms,
+  Controls,
+  Graphics,
+  Dialogs,
+  ComCtrls,
+  Menus,
+  laz.VirtualTrees,
+  SynEdit, SynHighlighterJScript;
 
 type
+  PElement = ^TElement;
+  TElement = record
+    ID: Integer;
+    Caption: string;
+  end;
+
   TMainForm = class(TForm)
+    MainEditor: TSynEdit;
+    OpenDialog: TOpenDialog;
+    SynJScriptSyn: TSynJScriptSyn;
     VST: TLazVirtualStringTree;
     MainMenu: TMainMenu;
     StatusBar: TStatusBar;
-    ElementEditor: TSynEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure VSTGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+    procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+    procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   strict private
     procedure CreateMenu;
     function CreateMainMenu: TMenuItem;
     procedure CreateMainMenuExitItem(const AItem: TMenuItem);
     procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
+    procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
+    procedure CreateTree;
+    procedure InitializeEditor;
     procedure ExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
+    procedure SaveClick(Sender: TObject);
   public
 
   end;
@@ -37,9 +64,41 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   CreateMenu();
+  CreateTree();
+  InitializeEditor();
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  //
+end;
+
+procedure TMainForm.VSTGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize := Sizeof(TElement);
+end;
+
+procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+var
+  P: PElement;
+begin
+  P := Sender.GetNodeData(Node);
+  CellText := P.Caption;
+end;
+
+procedure TMainForm.VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
+  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+var
+  P: PElement;
+begin
+  P := Sender.GetNodeData(Node);
+  P^.Caption:= '';
+  P^.id := 0;
+end;
+
+procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
   //
 end;
@@ -50,6 +109,8 @@ var
 begin
   MainMenuItem := CreateMainMenu();
   CreateMainMenuOpenItem(MainMenuItem);
+  CreateMainMenuSaveItem(MainMenuItem);
+  MainMenuItem.AddSeparator();
   CreateMainMenuExitItem(MainMenuItem);
   MainMenu.Items.Add(MainMenuItem);
 end;
@@ -79,8 +140,55 @@ begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Open';
   Item.Caption := 'Открыть';
-  Item.OnClick := nil;
+  Item.OnClick := OpenClick;
   AItem.Add(Item);
+end;
+
+procedure TMainForm.CreateMainMenuSaveItem(const AItem: TMenuItem);
+var
+  Item: TMenuItem;
+begin
+  Item := TMenuItem.Create(AItem);
+  Item.Name := 'mi_Save';
+  Item.Caption := 'Сохранить';
+  Item.OnClick := SaveClick;
+  AItem.Add(Item);
+end;
+
+procedure TMainForm.CreateTree;
+var
+  P: PElement;
+  Node: PVirtualNode;
+  InfoNode: PVirtualnode;
+begin
+  Node := VST.AddChild(nil, nil);
+  P := VST.GetNodeData(Node);
+  if Assigned(P) then
+  begin
+    P^.Id := 1;
+    P.Caption := 'Документ';
+  end;
+
+  InfoNode := VST.AddChild(Node, nil);
+  P := VST.GetNodeData(InfoNode);
+  if Assigned(InfoNode) then
+  begin
+    P^.Id := 2;
+    P^.Caption := 'Блок Info';
+  end;
+
+  InfoNode := VST.AddChild(Node, nil);
+  P := VST.GetNodeData(InfoNode);
+  if Assigned(InfoNode) then
+  begin
+    P^.Id := 3;
+    P^.Caption := 'Блок Server';
+  end;
+end;
+
+procedure TMainForm.InitializeEditor;
+begin
+  MainEditor.ClearAll();
 end;
 
 procedure TMainForm.ExitClick(Sender: TObject);
@@ -89,6 +197,17 @@ begin
 end;
 
 procedure TMainForm.OpenClick(Sender: TObject);
+begin
+  OpenDialog.InitialDir := ExtractFilePath(ParamStr(0));
+  OpenDialog.Filter:='Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
+  //OpenDialog.FileName:= '';
+  if OpenDialog.Execute then
+  begin
+
+  end;
+end;
+
+procedure TMainForm.SaveClick(Sender: TObject);
 begin
 
 end;
