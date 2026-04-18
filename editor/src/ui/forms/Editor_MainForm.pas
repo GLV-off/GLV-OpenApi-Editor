@@ -82,7 +82,7 @@ uses
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FCfg := TIniCfg.Create('');
+  FCfg := TIniCfg.Create(TEnv.ConfigFilepath);
   CreateMenu();
   CreateTree();
   InitializeEditor();
