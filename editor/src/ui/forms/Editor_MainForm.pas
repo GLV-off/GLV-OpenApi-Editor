@@ -70,6 +70,8 @@ type
     procedure SaveClick(Sender: TObject);
     procedure DefaultOnException(const AEx: Exception);
     procedure DoOnException(const InE: Exception);
+    function FileSuported(const APath: string): Boolean;
+    procedure ShowFileNotSuported;
   public
     procedure OpenDocument(const APath: string);
     procedure OpenDocumentUnsafe(const APath: string);
@@ -379,10 +381,28 @@ begin
     FOnException(InE);
 end;
 
+function TMainForm.FileSuported(const APath: string): Boolean;
+var
+  Ext: string;
+begin
+  Ext := ExtractFileExt(APath);
+  Result := Ext = 'json';
+end;
+
+procedure TMainForm.ShowFileNotSuported;
+begin
+  ShowMessage('Открываемый файл не поддерживается!');
+end;
+
 procedure TMainForm.OpenDocument(const APath: string);
 begin
   if FileExists(APath) then
-    OpenDocumentUnsafe(APath);
+  begin
+    if FileSuported(APath) then
+      OpenDocumentUnsafe(APath)
+    else
+      ShowFileNotSuported();
+  end;
 end;
 
 procedure TMainForm.OpenDocumentUnsafe(const APath: string);
@@ -424,6 +444,7 @@ end;
 procedure TMainForm.SaveDocument(const APath: string);
 begin
   FCfg.LastOpenedFile := APath;
+
   MainEditor.BeginUpdate();
   try
     try

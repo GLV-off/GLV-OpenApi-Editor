@@ -49,7 +49,7 @@ object MainForm: TMainForm
     ParentColor = False
     ParentFont = False
     TabOrder = 2
-    Gutter.Width = 111
+    Gutter.Width = 109
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
