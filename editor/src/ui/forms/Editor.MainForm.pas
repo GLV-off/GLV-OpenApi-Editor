@@ -14,7 +14,8 @@ uses
   ComCtrls,
   Menus,
   laz.VirtualTrees,
-  SynEdit, SynHighlighterJScript;
+  SynEdit,
+  SynHighlighterJScript;
 
 type
   PElement = ^TElement;

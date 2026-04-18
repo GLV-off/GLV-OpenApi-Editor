@@ -549,6 +549,7 @@ object MainForm: TMainForm
   end
   object SynJScriptSyn: TSynJScriptSyn
     DefaultFilter = 'Файлы Javascript (*.js)|*.js;JSON (*.json)|*.json'
+    Enabled = False
     Left = 152
     Top = 16
   end
