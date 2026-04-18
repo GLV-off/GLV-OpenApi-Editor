@@ -27,6 +27,10 @@ implementation
 uses
   SysUtils;
 
+const
+  CFG_ROOT: string = 'cfg';
+  CFG_LAST_OPENED: string = 'last_opened';
+
 constructor TIniCfg.Create(const AIni: TCustomIniFile; const AFilename: string);
 begin
   inherited Create;
@@ -48,12 +52,12 @@ end;
 
 function TIniCfg.GetLastOpenedFile: string;
 begin
-  Result := FIni.ReadString('cfg', 'last_opened', '');
+  Result := FIni.ReadString(CFG_ROOT, CFG_LAST_OPENED, '');
 end;
 
 procedure TIniCfg.SetLastOpenedFile(const AValue: string);
 begin
-  FIni.WriteString('cfg', 'last_opened', AValue);
+  FIni.WriteString(CFG_ROOT, CFG_LAST_OPENED, AValue);
 end;
 
 end.
