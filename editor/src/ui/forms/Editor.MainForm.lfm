@@ -41,14 +41,14 @@ object MainForm: TMainForm
     Top = 0
     Width = 725
     Align = alClient
-    Font.Height = -13
-    Font.Name = 'Courier New'
+    Font.Height = -21
+    Font.Name = 'BigBlueTerm437 Nerd Font'
     Font.Pitch = fpFixed
-    Font.Quality = fqNonAntialiased
+    Font.Quality = fqDraft
     ParentColor = False
     ParentFont = False
     TabOrder = 2
-    Gutter.Width = 97
+    Gutter.Width = 111
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
@@ -509,7 +509,7 @@ object MainForm: TMainForm
         MarkupInfo.Foreground = clNone
       end
       object SynGutterLineNumber1: TSynGutterLineNumber
-        Width = 17
+        Width = 31
         MouseActions = <>
         MarkupInfo.Background = clBtnFace
         MarkupInfo.Foreground = clNone

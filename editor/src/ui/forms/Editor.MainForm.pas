@@ -55,8 +55,11 @@ type
     procedure OpenClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
     procedure DefaultOnException(const AEx: Exception);
+    procedure DoOnException(const InE: Exception);
   public
-    procedure Opendocument(const APath: string);
+    procedure OpenDocument(const APath: string);
+    procedure OpenDocumentUnsafe(const APath: string);
+    procedure SaveDocument(const APath: string);
     property OnException: TOnException
              read FOnException
              write FOnException;
@@ -196,6 +199,8 @@ end;
 
 procedure TMainForm.InitializeEditor;
 begin
+  //MainEDitor.Font.Name := '';
+
   MainEditor.ClearAll();
 end;
 
@@ -214,7 +219,9 @@ end;
 
 procedure TMainForm.SaveClick(Sender: TObject);
 begin
-
+  OpenDialog.InitialDir:= '';
+  if OpenDialog.Execute() then
+    SaveDocument(OpenDialog.Filename);
 end;
 
 procedure TMainForm.DefaultOnException(const AEx: Exception);
@@ -222,7 +229,19 @@ begin
   ShowMessage('Ошибка: ' + AEx.Message);
 end;
 
-procedure TMainForm.Opendocument(const APath: string);
+procedure TMainForm.DoOnException(const InE: Exception);
+begin
+  if Assigned(FOnException) then
+    FOnException(InE);
+end;
+
+procedure TMainForm.OpenDocument(const APath: string);
+begin
+  if FileExists(APath) then
+    OpenDocumentUnsafe(APath);
+end;
+
+procedure TMainForm.OpenDocumentUnsafe(const APath: string);
 begin
   MainEditor.BeginUpdate();
   try
@@ -231,11 +250,25 @@ begin
       MainEditor.Lines.LoadFromFile(APath);
     except
       on E: Exception do
-        if Assigned(FOnException) then
-          FOnException(E);
+        DoOnException(E);
     end;
   finally
     MainEditor.EndUpdate;
+  end;
+end;
+
+procedure TMainForm.SaveDocument(const APath: string);
+begin
+  MainEditor.BeginUpdate();
+  try
+    try
+      MainEditor.Lines.SaveToFile(APath);
+    except
+      on E: Exception do
+        DoOnException(E);
+    end;
+  finally
+    MainEditor.EndUpdate();
   end;
 end;
 
