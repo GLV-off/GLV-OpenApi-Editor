@@ -219,7 +219,7 @@ end;
 
 procedure TMainForm.DefaultOnException(const AEx: Exception);
 begin
-  ShowMessage('Ошибка: ' + AEx.Message );
+  ShowMessage('Ошибка: ' + AEx.Message);
 end;
 
 procedure TMainForm.Opendocument(const APath: string);
