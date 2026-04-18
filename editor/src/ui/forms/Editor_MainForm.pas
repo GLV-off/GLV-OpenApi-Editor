@@ -445,16 +445,19 @@ procedure TMainForm.SaveDocument(const APath: string);
 begin
   FCfg.LastOpenedFile := APath;
 
-  MainEditor.BeginUpdate();
-  try
+  if not MainEditor.Lines.Text.IsEmpty then;
+  begin
+    MainEditor.BeginUpdate();
     try
-      MainEditor.Lines.SaveToFile(APath);
-    except
-      on E: Exception do
-        DoOnException(E);
+      try
+        MainEditor.Lines.SaveToFile(APath);
+      except
+        on E: Exception do
+          DoOnException(E);
+      end;
+    finally
+      MainEditor.EndUpdate();
     end;
-  finally
-    MainEditor.EndUpdate();
   end;
 end;
 
