@@ -17,7 +17,8 @@ type
     function GetLastOpenedFile: string; override;
     procedure SetLastOpenedFile(const AValue: string); override;
   public
-    constructor Create(const AIni: TCustomIniFile; const AFilename: string);
+    constructor Create(const AIni: TCustomIniFile; const AFilename: string); overload;
+    constructor Create(const AFilename: string); overload;
     destructor Destroy; override;
   end;
 
@@ -31,6 +32,11 @@ begin
   inherited Create;
   FIni := AIni;
   FFilename := AFilename;
+end;
+
+constructor TIniCfg.Create(const AFilename: string);
+begin
+  Self.Create(TIniFile.Create(AFilename), AFilename);
 end;
 
 destructor TIniCfg.Destroy;

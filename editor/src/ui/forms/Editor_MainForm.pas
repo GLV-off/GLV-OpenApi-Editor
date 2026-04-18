@@ -15,7 +15,8 @@ uses
   Menus,
   laz.VirtualTrees,
   SynEdit,
-  SynHighlighterJScript;
+  SynHighlighterJScript,
+  Editor_Cfg;
 
 type
   PElement = ^TElement;
@@ -45,6 +46,7 @@ type
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   strict private
     FOnException: TOnException;
+    FCfg: TCfg;
     procedure CreateMenu;
     function CreateMainMenu: TMenuItem;
     procedure CreateMainMenuExitItem(const AItem: TMenuItem);
@@ -73,12 +75,14 @@ implementation
 
 uses
   Editor_Env,
-  Editor_Fonts;
+  Editor_Fonts,
+  Editor_Cfg_Ini;
 
 {$R *.lfm}
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  FCfg := TIniCfg.Create('');
   CreateMenu();
   CreateTree();
   InitializeEditor();
@@ -87,6 +91,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FontUnload(TEnv.EditorFont);
+  FreeAndNil(FCfg);
 end;
 
 procedure TMainForm.VSTGetNodeDataSize(Sender: TBaseVirtualTree;
