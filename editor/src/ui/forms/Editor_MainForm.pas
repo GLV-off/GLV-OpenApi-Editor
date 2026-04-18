@@ -36,11 +36,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTGetNodeDataSize(Sender: TBaseVirtualTree;
-      var NodeDataSize: Integer);
+                  var NodeDataSize: Integer);
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+                  Column: TColumnIndex; TextType: TVSTTextType;
+                  var CellText: String);
     procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
-      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+                  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   strict private
     FOnException: TOnException;
@@ -70,6 +71,10 @@ var
 
 implementation
 
+uses
+  Editor_Env,
+  Editor_Fonts;
+
 {$R *.lfm}
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -81,7 +86,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  //
+  FontUnload(TEnv.EditorFont);
 end;
 
 procedure TMainForm.VSTGetNodeDataSize(Sender: TBaseVirtualTree;

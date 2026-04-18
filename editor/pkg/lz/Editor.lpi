@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-            <OtherUnitFiles Value="..\..\src\ui\forms"/>
+            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
             <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\release"/>
           </SearchPaths>
           <CodeGeneration>
@@ -93,6 +93,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\..\src\Editor_Fonts.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\src\Editor_Env.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -103,7 +111,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-      <OtherUnitFiles Value="..\..\src\ui\forms"/>
+      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
       <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\debug"/>
     </SearchPaths>
     <Parsing>
