@@ -41,14 +41,15 @@ object MainForm: TMainForm
     Top = 0
     Width = 725
     Align = alClient
+    Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -21
-    Font.Name = 'BigBlueTerm437 Nerd Font'
+    Font.Name = 'BigBlueTermPlus Nerd Font'
     Font.Pitch = fpFixed
     Font.Quality = fqDraft
     ParentColor = False
     ParentFont = False
     TabOrder = 2
-    Gutter.Width = 109
+    Gutter.Width = 111
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
