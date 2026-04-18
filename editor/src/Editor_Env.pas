@@ -16,6 +16,8 @@ type
     class function EditorFont: string; static;
 
     class function EditorFontFIlename: string; static;
+
+    class function ConfigFilepath: string; static;
   end;
 
 implementation
@@ -48,6 +50,11 @@ end;
 class function TEnv.EditorFontFIlename: string;
 begin
   Result := Asset('BigBlueTermPlus Nerd Font');
+end;
+
+class function TEnv.ConfigFilepath: string;
+begin
+  Result := Root() + 'cfg.ini';
 end;
 
 end.
