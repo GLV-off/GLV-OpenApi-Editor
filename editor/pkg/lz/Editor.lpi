@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
+            <OtherUnitFiles Value="..\..\src\ui\forms"/>
             <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\release"/>
           </SearchPaths>
           <CodeGeneration>
@@ -87,7 +87,7 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\src\ui\forms\Editor.MainForm.pas"/>
+        <Filename Value="..\..\src\ui\forms\Editor_MainForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
@@ -103,7 +103,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
+      <OtherUnitFiles Value="..\..\src\ui\forms"/>
       <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\debug"/>
     </SearchPaths>
     <Parsing>
