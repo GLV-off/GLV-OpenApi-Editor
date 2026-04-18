@@ -53,6 +53,7 @@ type
     procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
     procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
     procedure CreateTree;
+    procedure ClearTree;
     procedure InitializeEditor;
     procedure ExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
@@ -207,6 +208,11 @@ begin
   end;
 end;
 
+procedure TMainForm.ClearTree;
+begin
+  VST.Clear;
+end;
+
 procedure TMainForm.InitializeEditor;
 begin
   MainEditor.ClearAll();
@@ -253,6 +259,7 @@ procedure TMainForm.OpenDocumentUnsafe(const APath: string);
 begin
   MainEditor.BeginUpdate();
   try
+    ClearTree;
     MainEditor.ClearAll;
     try
       MainEditor.Lines.LoadFromFile(APath);
@@ -260,6 +267,7 @@ begin
       on E: Exception do
         DoOnException(E);
     end;
+    CreateTree();
   finally
     MainEditor.EndUpdate;
   end;
