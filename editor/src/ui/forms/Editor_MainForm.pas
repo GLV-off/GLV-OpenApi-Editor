@@ -7,6 +7,7 @@ interface
 uses
   Classes,
   SysUtils,
+  FpJson,
   Forms,
   Controls,
   Graphics,
@@ -20,8 +21,9 @@ uses
 
 type
   PElement = ^TElement;
+
   TElement = record
-    ID: Integer;
+    ID: integer;
     Caption: string;
   end;
 
@@ -37,22 +39,30 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTGetNodeDataSize(Sender: TBaseVirtualTree;
-                  var NodeDataSize: Integer);
+      var NodeDataSize: integer);
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-                  Column: TColumnIndex; TextType: TVSTTextType;
-                  var CellText: String);
-    procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
-                  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+      Column: TColumnIndex; TextType: TVSTTextType;
+      var CellText: string);
+    procedure VSTInitNode(Sender: TBaseVirtualTree;
+      ParentNode, Node: PVirtualNode;
+      var InitialStates: TVirtualNodeInitStates);
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
   strict private
     FOnException: TOnException;
     FCfg: TCfg;
+    FJsonDocument: TJSONObject;
     procedure CreateMenu;
     function CreateMainMenu: TMenuItem;
     procedure CreateMainMenuExitItem(const AItem: TMenuItem);
     procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
     procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
     procedure CreateTree;
+    function CreateDocumentNode: PVirtualNode;
+    function CreateInfoNode(const AParent: PVirtualNode): PVirtualNode;
+    function CreatePathsNode(const AParent: PVirtualNode): PVirtualNode;
+    function CreateServersNode(const AParent: PVirtualNode): PVirtualNode;
+    function CreateComponentsNode(const AParent: PVirtualNode): PVirtualNode;
+    function CreateTagsNode(const AParent: PVirtualNode): PVirtualNode;
     procedure ClearTree;
     procedure InitializeEditor;
     procedure ExitClick(Sender: TObject);
@@ -64,9 +74,7 @@ type
     procedure OpenDocument(const APath: string);
     procedure OpenDocumentUnsafe(const APath: string);
     procedure SaveDocument(const APath: string);
-    property OnException: TOnException
-             read FOnException
-             write FOnException;
+    property OnException: TOnException read FOnException write FOnException;
   end;
 
 var
@@ -75,14 +83,16 @@ var
 implementation
 
 uses
+  JsonParser,
   Editor_Env,
   Editor_Fonts,
   Editor_Cfg_Ini;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  FJsonDocument := TJSONObject.Create();
   FCfg := TIniCfg.Create(TEnv.ConfigFilepath);
   CreateMenu();
   CreateTree();
@@ -92,17 +102,18 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FontUnload(TEnv.EditorFont);
+  FreeAndNil(FJsonDocument);
   FreeAndNil(FCfg);
 end;
 
 procedure TMainForm.VSTGetNodeDataSize(Sender: TBaseVirtualTree;
-  var NodeDataSize: Integer);
+  var NodeDataSize: integer);
 begin
   NodeDataSize := Sizeof(TElement);
 end;
 
 procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   P: PElement;
 begin
@@ -110,19 +121,19 @@ begin
   CellText := P.Caption;
 end;
 
-procedure TMainForm.VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
-  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+procedure TMainForm.VSTInitNode(Sender: TBaseVirtualTree;
+  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 var
   P: PElement;
 begin
   P := Sender.GetNodeData(Node);
-  P^.Caption:= '';
+  P^.Caption := '';
   P^.id := 0;
 end;
 
 procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  //
+
 end;
 
 procedure TMainForm.CreateMenu;
@@ -150,7 +161,7 @@ var
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Exit';
-  Item.Caption:='Выход';
+  Item.Caption := 'Выход';
   Item.OnClick := ExitClick;
   AItem.Add(Item);
 end;
@@ -179,33 +190,151 @@ end;
 
 procedure TMainForm.CreateTree;
 var
+  Node: PVirtualNode;
+  Root: PVirtualNode;
+begin
+  Root := CreateDocumentNode();
+  Node := CreateInfoNode(Root);
+  Node := CreatePathsNode(Root);
+  Node := CreateServersNode(Root);
+  Node := CreateTagsNode(Root);
+  Node := CreateComponentsNode(Root);
+end;
+
+function TMainForm.CreateDocumentNode: PVirtualNode;
+var
+  Node: PVirtualNode;
+  P: PElement;
+begin
+  if Assigned(FJsonDocument) then
+  begin
+    Node := VST.AddChild(nil, nil);
+
+    P := VST.GetNodeData(Node);
+    if Assigned(P) then
+    begin
+      P^.Id := 1;
+      P.Caption := 'Документ';
+    end;
+
+    Result := Node;
+  end
+  else
+    Result := nil;
+end;
+
+function TMainForm.CreateInfoNode(const AParent: PVirtualNode): PVirtualNode;
+var
+  Node: PVirtualNode;
+  P: PElement;
+  JsonInfo: TJSONData;
+begin
+  JsonInfo := nil;
+  if FJsonDocument.Find('info', JsonInfo) then
+  begin
+    if Assigned(JsonInfo) then
+    begin
+      Node := VST.AddChild(AParent, nil);
+      P := VST.GetNodeData(Node);
+      if Assigned(Node) then
+      begin
+        P^.Id := 2;
+        P^.Caption := 'Блок Info';
+      end;
+      Result := Node;
+    end
+    else
+      Result := nil;
+  end
+  else
+    Result := nil;
+end;
+
+function TMainForm.CreatePathsNode(const AParent: PVirtualNode): PVirtualNode;
+var
   P: PElement;
   Node: PVirtualNode;
-  InfoNode: PVirtualnode;
+  JsonPaths: TJSONData;
 begin
-  Node := VST.AddChild(nil, nil);
-  P := VST.GetNodeData(Node);
-  if Assigned(P) then
+  if FJsonDocument.Find('paths', JsonPaths) then
   begin
-    P^.Id := 1;
-    P.Caption := 'Документ';
-  end;
+    Node := VST.AddChild(AParent, nil);
+    P := VST.GetNodeData(Node);
+    if Assigned(Node) then
+    begin
+      P^.Id := 3;
+      P^.Caption := 'Блок Paths';
+    end;
+  end
+  else
+    Result := nil;
+end;
 
-  InfoNode := VST.AddChild(Node, nil);
-  P := VST.GetNodeData(InfoNode);
-  if Assigned(InfoNode) then
+function TMainForm.CreateServersNode(const AParent: PVirtualNode): PVirtualNode;
+var
+  P: PElement;
+  Node: PVirtualNode;
+  JsonServers: TJSONData;
+begin
+  if FJsonDocument.Find('servers', JsonServers) then
   begin
-    P^.Id := 2;
-    P^.Caption := 'Блок Info';
+    Node := VST.AddChild(AParent, nil);
+    P := VST.GetNodeData(Node);
+    if Assigned(Node) then
+    begin
+      P^.Id := 3;
+      P^.Caption := 'Блок Server';
+    end;
+    Result := Node;
+  end
+  else
+  begin
+    Result := nil;
   end;
+end;
 
-  InfoNode := VST.AddChild(Node, nil);
-  P := VST.GetNodeData(InfoNode);
-  if Assigned(InfoNode) then
+function TMainForm.CreateComponentsNode(const AParent: PVirtualNode): PVirtualNode;
+var
+  P: PElement;
+  Node: PVirtualNode;
+  JsonComponents: TJSONData;
+begin
+  if FJsonDocument.Find('components', JsonComponents) then
   begin
-    P^.Id := 3;
-    P^.Caption := 'Блок Server';
+    Node := VST.AddChild(AParent, nil);
+    P := VST.GetNodeData(Node);
+    if Assigned(Node) then
+    begin
+      P^.Id := 3;
+      P^.Caption := 'Блок Components';
+    end;
+    Result := Node;
+  end
+  else
+  begin
+    Result := nil;
   end;
+end;
+
+function TMainForm.CreateTagsNode(const AParent: PVirtualNode): PVirtualNode;
+var
+  P: PElement;
+  Node: PVirtualNode;
+  JsonTags: TJSONData;
+begin
+  if FJsonDocument.Find('tags', JsonTags) then
+  begin
+    Node := VST.AddChild(AParent, nil);
+    P := VST.GetNodeData(Node);
+    if Assigned(Node) then
+    begin
+      P^.Id := 3;
+      P^.Caption := 'Блок Tags';
+    end;
+    Result := Node;
+  end
+  else
+    Result := nil;
 end;
 
 procedure TMainForm.ClearTree;
@@ -225,15 +354,16 @@ end;
 
 procedure TMainForm.OpenClick(Sender: TObject);
 begin
-  OpenDialog.InitialDir := ExtractFilePath(ParamStr(0));
-  OpenDialog.Filter:='Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
+  OpenDialog.InitialDir := FCfg.LastOpenedFile;
+  OpenDialog.Filter :=
+    'Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
   if OpenDialog.Execute then
     OpenDocument(OpenDialog.Filename);
 end;
 
 procedure TMainForm.SaveClick(Sender: TObject);
 begin
-  OpenDialog.InitialDir:= '';
+  OpenDialog.InitialDir := '';
   if OpenDialog.Execute() then
     SaveDocument(OpenDialog.Filename);
 end;
@@ -256,10 +386,16 @@ begin
 end;
 
 procedure TMainForm.OpenDocumentUnsafe(const APath: string);
+var
+  Stream: TStringStream;
+  JsonElement: TJSONData;
 begin
+  FCfg.LastOpenedFile := APath;
+
   MainEditor.BeginUpdate();
   try
-    ClearTree;
+    ClearTree();
+    FreeAndNil(FJsonDocument);
     MainEditor.ClearAll;
     try
       MainEditor.Lines.LoadFromFile(APath);
@@ -267,6 +403,18 @@ begin
       on E: Exception do
         DoOnException(E);
     end;
+
+    Stream := TStringStream.Create('', TEncoding.Utf8.Clone);
+    try
+      MainEditor.Lines.SaveToStream(Stream);
+      Stream.Position := 0;
+      JsonElement := GetJSON(Stream);
+      if Assigned(JsonElement) and JsonElement.InheritsFrom(TJSONObject) then
+        FJsonDocument := TJSONObject(JsonElement);
+    finally
+      FreeAndNil(Stream);
+    end;
+
     CreateTree();
   finally
     MainEditor.EndUpdate;
@@ -289,4 +437,3 @@ begin
 end;
 
 end.
-
