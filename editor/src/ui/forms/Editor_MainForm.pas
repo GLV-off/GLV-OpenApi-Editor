@@ -356,6 +356,7 @@ end;
 
 procedure TMainForm.OpenClick(Sender: TObject);
 begin
+  OpenDialog.Title := 'Открыть файл';
   OpenDialog.InitialDir := FCfg.LastOpenedFile;
   OpenDialog.Filter :=
     'Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
@@ -365,6 +366,7 @@ end;
 
 procedure TMainForm.SaveClick(Sender: TObject);
 begin
+  OpenDialog.Title := 'Сохранить файл';
   OpenDialog.InitialDir := '';
   if OpenDialog.Execute() then
     SaveDocument(OpenDialog.Filename);
