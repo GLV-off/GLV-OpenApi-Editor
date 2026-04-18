@@ -423,6 +423,7 @@ end;
 
 procedure TMainForm.SaveDocument(const APath: string);
 begin
+  FCfg.LastOpenedFile := APath;
   MainEditor.BeginUpdate();
   try
     try
