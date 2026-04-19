@@ -18,13 +18,13 @@ uses
   SynEdit,
   SynHighlighterJScript,
   Editor_UiTypes,
-  Editor_Cfg;
+  Editor_Cfg,
+  Editor_EditorFrame;
 
 type
   TOnException = procedure(const AException: Exception);
 
   TMainForm = class(TForm)
-    MainEditor: TSynEdit;
     OpenDialog: TOpenDialog;
     SynJScriptSyn: TSynJScriptSyn;
     VST: TLazVirtualStringTree;
@@ -46,9 +46,11 @@ type
     procedure VSTFreeNode(Sender: TBaseVirtualTree;
                           Node: PVirtualNode);
   strict private
+    FEditorFrame: TEditorFrame;
     FOnException: TOnException;
     FCfg: TCfg;
     FJsonDocument: TJSONObject;
+    function GetMainEditor: TSynEdit;
     procedure CreateMenu;
     procedure CreateTree;
     function CreateDocumentNode: PVirtualNode;
@@ -71,6 +73,7 @@ type
     procedure OpenDocumentUnsafe(const APath: string);
     procedure SaveDocument(const APath: string);
     property OnException: TOnException read FOnException write FOnException;
+    property MainEditor: TSynEdit read GetMainEditor;
   end;
 
 var
@@ -181,6 +184,14 @@ end;
 procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree;
                                 Node: PVirtualNode);
 begin
+end;
+
+function TMainForm.GetMainEditor: TSynEdit;
+begin
+  if Assigned(FEditorFrame) then
+    REsult := FEditorFrame.MainEditor
+  else
+    Result := nil;
 end;
 
 procedure TMainForm.CreateMenu;
@@ -351,7 +362,10 @@ end;
 
 procedure TMainForm.InitializeEditor;
 begin
-  MainEditor.ClearAll();
+  FEditorFrame := TEditorFrame.Create(Self);
+  FEditorFrame.Align := alClient;
+  FEditorFrame.Parent := Self;
+  FEditorFrame.Clear();
 end;
 
 procedure TMainForm.ExitClick(Sender: TObject);
