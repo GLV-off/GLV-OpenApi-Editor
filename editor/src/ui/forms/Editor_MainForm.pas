@@ -64,10 +64,7 @@ type
     procedure ExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
-    procedure DefaultOnException(const AEx: Exception);
     procedure DoOnException(const InE: Exception);
-    function FileSuported(const APath: string): Boolean;
-    procedure ShowFileNotSuported;
   public
     procedure OpenDocument(const APath: string);
     procedure OpenDocumentUnsafe(const APath: string);
@@ -85,6 +82,7 @@ uses
   JsonParser,
   Editor_Env,
   Editor_Fonts,
+  Editor_UiUtils,
   Editor_Cfg_Ini;
 
 {$R *.lfm}
@@ -391,28 +389,10 @@ begin
     SaveDocument(OpenDialog.Filename);
 end;
 
-procedure TMainForm.DefaultOnException(const AEx: Exception);
-begin
-  ShowMessage('Ошибка: ' + AEx.Message);
-end;
-
 procedure TMainForm.DoOnException(const InE: Exception);
 begin
   if Assigned(FOnException) then
     FOnException(InE);
-end;
-
-function TMainForm.FileSuported(const APath: string): Boolean;
-var
-  Ext: string;
-begin
-  Ext := ExtractFileExt(APath);
-  Result := Ext = 'json';
-end;
-
-procedure TMainForm.ShowFileNotSuported;
-begin
-  ShowMessage('Открываемый файл не поддерживается!');
 end;
 
 procedure TMainForm.OpenDocument(const APath: string);
