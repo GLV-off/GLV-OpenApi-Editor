@@ -33,14 +33,18 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTGetNodeDataSize(Sender: TBaseVirtualTree;
-      var NodeDataSize: integer);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType;
-      var CellText: string);
+                                 var NodeDataSize: integer);
+    procedure VSTGetText(Sender: TBaseVirtualTree;
+                         Node: PVirtualNode;
+                         Column: TColumnIndex;
+                         TextType: TVSTTextType;
+                         var CellText: string);
     procedure VSTInitNode(Sender: TBaseVirtualTree;
-      ParentNode, Node: PVirtualNode;
-      var InitialStates: TVirtualNodeInitStates);
-    procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+                          ParentNode,
+                          Node: PVirtualNode;
+                          var InitialStates: TVirtualNodeInitStates);
+    procedure VSTFreeNode(Sender: TBaseVirtualTree;
+                          Node: PVirtualNode);
   strict private
     FOnException: TOnException;
     FCfg: TCfg;
@@ -150,8 +154,11 @@ begin
   NodeDataSize := Sizeof(TElement);
 end;
 
-procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree;
+                         Node: PVirtualNode;
+                         Column: TColumnIndex;
+                         TextType: TVSTTextType;
+                         var CellText: string);
 var
   P: PElement;
 begin
@@ -160,7 +167,9 @@ begin
 end;
 
 procedure TMainForm.VSTInitNode(Sender: TBaseVirtualTree;
-  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+                          ParentNode,
+                          Node: PVirtualNode;
+                          var InitialStates: TVirtualNodeInitStates);
 var
   P: PElement;
 begin
@@ -169,9 +178,9 @@ begin
   P^.id := 0;
 end;
 
-procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree;
+                                Node: PVirtualNode);
 begin
-
 end;
 
 procedure TMainForm.CreateMenu;
