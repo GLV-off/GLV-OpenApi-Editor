@@ -46,7 +46,9 @@ type
     FCfg: TCfg;
     FJsonDocument: TJSONObject;
     procedure CreateMenu;
-    procedure CreateMainMenuExitItem(const AItem: TMenuItem);
+    procedure CreateMainMenuExitItem(
+      const AItem: TMenuItem;
+      const AOnClick: TNotifyEvent);
     procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
     procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
     procedure CreateTree;
@@ -146,18 +148,20 @@ begin
   CreateMainMenuOpenItem(MainMenuItem);
   CreateMainMenuSaveItem(MainMenuItem);
   MainMenuItem.AddSeparator();
-  CreateMainMenuExitItem(MainMenuItem);
+  CreateMainMenuExitItem(MainMenuItem, ExitClick);
   MainMenu.Items.Add(MainMenuItem);
 end;
 
-procedure TMainForm.CreateMainMenuExitItem(const AItem: TMenuItem);
+procedure TMainForm.CreateMainMenuExitItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
 var
   Item: TMenuItem;
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Exit';
   Item.Caption := 'Выход';
-  Item.OnClick := ExitClick;
+  Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
 
