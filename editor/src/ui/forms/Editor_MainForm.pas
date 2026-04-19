@@ -49,8 +49,12 @@ type
     procedure CreateMainMenuExitItem(
       const AItem: TMenuItem;
       const AOnClick: TNotifyEvent);
-    procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
-    procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
+    procedure CreateMainMenuOpenItem(
+      const AItem: TMenuItem;
+      const AOnClick: TNotifyEvent);
+    procedure CreateMainMenuSaveItem(
+      const AItem: TMenuItem;
+      const AOnClick: TNotifyEvent);
     procedure CreateTree;
     function CreateDocumentNode: PVirtualNode;
     function CreateInfoNode(const AParent: PVirtualNode): PVirtualNode;
@@ -145,8 +149,8 @@ var
   MainMenuItem: TMenuItem;
 begin
   MainMenuItem := CreateMainMenu(MainMenu);
-  CreateMainMenuOpenItem(MainMenuItem);
-  CreateMainMenuSaveItem(MainMenuItem);
+  CreateMainMenuOpenItem(MainMenuItem, OpenClick);
+  CreateMainMenuSaveItem(MainMenuItem, SaveClick);
   MainMenuItem.AddSeparator();
   CreateMainMenuExitItem(MainMenuItem, ExitClick);
   MainMenu.Items.Add(MainMenuItem);
@@ -165,25 +169,29 @@ begin
   AItem.Add(Item);
 end;
 
-procedure TMainForm.CreateMainMenuOpenItem(const AItem: TMenuItem);
+procedure TMainForm.CreateMainMenuOpenItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
 var
   Item: TMenuItem;
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Open';
   Item.Caption := 'Открыть';
-  Item.OnClick := OpenClick;
+  Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
 
-procedure TMainForm.CreateMainMenuSaveItem(const AItem: TMenuItem);
+procedure TMainForm.CreateMainMenuSaveItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
 var
   Item: TMenuItem;
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Save';
   Item.Caption := 'Сохранить';
-  Item.OnClick := SaveClick;
+  Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
 
