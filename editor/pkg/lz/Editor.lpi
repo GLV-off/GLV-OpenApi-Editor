@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model"/>
+            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames"/>
             <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\release"/>
           </SearchPaths>
           <CodeGeneration>
@@ -113,6 +113,12 @@
         <Filename Value="..\..\src\ui\model\Editor_UiTypes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\..\src\ui\frames\Editor_EditorFrame.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditorFrame"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -123,7 +129,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model"/>
+      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames"/>
       <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\debug"/>
     </SearchPaths>
     <Parsing>

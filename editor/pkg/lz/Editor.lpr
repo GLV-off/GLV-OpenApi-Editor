@@ -12,7 +12,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms,
   Editor_MainForm, Editor_Fonts, Editor_Env, Editor_Cfg, Editor_Cfg_Ini, 
-Editor_UiTypes;
+Editor_UiTypes, Editor_EditorFrame;
 
 {$R *.res}
 
