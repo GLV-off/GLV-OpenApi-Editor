@@ -17,16 +17,10 @@ uses
   laz.VirtualTrees,
   SynEdit,
   SynHighlighterJScript,
+  Editor_UiTypes,
   Editor_Cfg;
 
 type
-  PElement = ^TElement;
-
-  TElement = record
-    ID: integer;
-    Caption: string;
-  end;
-
   TOnException = procedure(const AException: Exception);
 
   TMainForm = class(TForm)

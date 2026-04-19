@@ -32,7 +32,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
+            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model"/>
             <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\release"/>
           </SearchPaths>
           <CodeGeneration>
@@ -109,6 +109,10 @@
         <Filename Value="..\..\src\Editor_Cfg_Ini.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\..\src\ui\model\Editor_UiTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -119,7 +123,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src"/>
+      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model"/>
       <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\debug"/>
     </SearchPaths>
     <Parsing>
