@@ -46,7 +46,6 @@ type
     FCfg: TCfg;
     FJsonDocument: TJSONObject;
     procedure CreateMenu;
-    function CreateMainMenu: TMenuItem;
     procedure CreateMainMenuExitItem(const AItem: TMenuItem);
     procedure CreateMainMenuOpenItem(const AItem: TMenuItem);
     procedure CreateMainMenuSaveItem(const AItem: TMenuItem);
@@ -84,7 +83,14 @@ uses
   Editor_Fonts,
   Editor_Cfg_Ini;
 
-  {$R *.lfm}
+{$R *.lfm}
+
+function CreateMainMenu(const AParent: TComponent): TMenuItem;
+begin
+  Result := TMenuItem.Create(AParent);
+  Result.Name := 'mit_Main';
+  Result.Caption := 'Меню';
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -136,19 +142,12 @@ procedure TMainForm.CreateMenu;
 var
   MainMenuItem: TMenuItem;
 begin
-  MainMenuItem := CreateMainMenu();
+  MainMenuItem := CreateMainMenu(MainMenu);
   CreateMainMenuOpenItem(MainMenuItem);
   CreateMainMenuSaveItem(MainMenuItem);
   MainMenuItem.AddSeparator();
   CreateMainMenuExitItem(MainMenuItem);
   MainMenu.Items.Add(MainMenuItem);
-end;
-
-function TMainForm.CreateMainMenu: TMenuItem;
-begin
-  Result := TMenuItem.Create(MainMenu);
-  Result.Name := 'mit_Main';
-  Result.Caption := 'Меню';
 end;
 
 procedure TMainForm.CreateMainMenuExitItem(const AItem: TMenuItem);
