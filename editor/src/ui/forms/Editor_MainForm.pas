@@ -46,15 +46,6 @@ type
     FCfg: TCfg;
     FJsonDocument: TJSONObject;
     procedure CreateMenu;
-    procedure CreateMainMenuExitItem(
-      const AItem: TMenuItem;
-      const AOnClick: TNotifyEvent);
-    procedure CreateMainMenuOpenItem(
-      const AItem: TMenuItem;
-      const AOnClick: TNotifyEvent);
-    procedure CreateMainMenuSaveItem(
-      const AItem: TMenuItem;
-      const AOnClick: TNotifyEvent);
     procedure CreateTree;
     function CreateDocumentNode: PVirtualNode;
     function CreateInfoNode(const AParent: PVirtualNode): PVirtualNode;
@@ -96,6 +87,45 @@ begin
   Result := TMenuItem.Create(AParent);
   Result.Name := 'mit_Main';
   Result.Caption := 'Меню';
+end;
+
+procedure CreateMainMenuOpenItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
+var
+  Item: TMenuItem;
+begin
+  Item := TMenuItem.Create(AItem);
+  Item.Name := 'mi_Open';
+  Item.Caption := 'Открыть';
+  Item.OnClick := AOnClick;
+  AItem.Add(Item);
+end;
+
+procedure CreateMainMenuExitItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
+var
+  Item: TMenuItem;
+begin
+  Item := TMenuItem.Create(AItem);
+  Item.Name := 'mi_Exit';
+  Item.Caption := 'Выход';
+  Item.OnClick := AOnClick;
+  AItem.Add(Item);
+end;
+
+procedure CreateMainMenuSaveItem(
+  const AItem: TMenuItem;
+  const AOnClick: TNotifyEvent);
+var
+  Item: TMenuItem;
+begin
+  Item := TMenuItem.Create(AItem);
+  Item.Name := 'mi_Save';
+  Item.Caption := 'Сохранить';
+  Item.OnClick := AOnClick;
+  AItem.Add(Item);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -154,45 +184,6 @@ begin
   MainMenuItem.AddSeparator();
   CreateMainMenuExitItem(MainMenuItem, ExitClick);
   MainMenu.Items.Add(MainMenuItem);
-end;
-
-procedure TMainForm.CreateMainMenuExitItem(
-  const AItem: TMenuItem;
-  const AOnClick: TNotifyEvent);
-var
-  Item: TMenuItem;
-begin
-  Item := TMenuItem.Create(AItem);
-  Item.Name := 'mi_Exit';
-  Item.Caption := 'Выход';
-  Item.OnClick := AOnClick;
-  AItem.Add(Item);
-end;
-
-procedure TMainForm.CreateMainMenuOpenItem(
-  const AItem: TMenuItem;
-  const AOnClick: TNotifyEvent);
-var
-  Item: TMenuItem;
-begin
-  Item := TMenuItem.Create(AItem);
-  Item.Name := 'mi_Open';
-  Item.Caption := 'Открыть';
-  Item.OnClick := AOnClick;
-  AItem.Add(Item);
-end;
-
-procedure TMainForm.CreateMainMenuSaveItem(
-  const AItem: TMenuItem;
-  const AOnClick: TNotifyEvent);
-var
-  Item: TMenuItem;
-begin
-  Item := TMenuItem.Create(AItem);
-  Item.Name := 'mi_Save';
-  Item.Caption := 'Сохранить';
-  Item.OnClick := AOnClick;
-  AItem.Add(Item);
 end;
 
 procedure TMainForm.CreateTree;
