@@ -12,11 +12,12 @@ implementation
 
 uses
   SysUtils,
-  Dialogs;
+  Dialogs,
+  Editor_Localization;
 
 procedure ShowFileNotSuported;
 begin
-  ShowMessage('Открываемый файл не поддерживается!');
+  ShowMessage(RC_FILE_NOT_SUPPORTED);
 end;
 
 function FileSuported(const APath: string): Boolean;

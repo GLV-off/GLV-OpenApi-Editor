@@ -32,9 +32,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-
     procedure FreeJsonDocument;
-
     property JsonDocument: TJSONObject read FJsonDocument write FJsonDocument;
     property OnException: TOnException read FOnException write FOnException;
     property Cfg: TCfg read FCfg write FCfg;
@@ -94,6 +92,7 @@ implementation
 uses
   JsonParser,
   Editor_Env,
+  Editor_Localization,
   Editor_Fonts,
   Editor_UiUtils,
   Editor_Cfg_Ini;
@@ -104,7 +103,7 @@ function CreateMainMenu(const AParent: TComponent): TMenuItem;
 begin
   Result := TMenuItem.Create(AParent);
   Result.Name := 'mit_Main';
-  Result.Caption := 'Меню';
+  Result.Caption := RC_MENU;
 end;
 
 procedure CreateMainMenuOpenItem(
@@ -115,7 +114,7 @@ var
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Open';
-  Item.Caption := 'Открыть';
+  Item.Caption := RC_OPEN;
   Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
@@ -128,7 +127,7 @@ var
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Exit';
-  Item.Caption := 'Выход';
+  Item.Caption := RC_EXIT;
   Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
@@ -141,7 +140,7 @@ var
 begin
   Item := TMenuItem.Create(AItem);
   Item.Name := 'mi_Save';
-  Item.Caption := 'Сохранить';
+  Item.Caption := RC_SAVE;
   Item.OnClick := AOnClick;
   AItem.Add(Item);
 end;
@@ -239,8 +238,8 @@ end;
 
 procedure TMainForm.CreateTree;
 var
-  Node: PVirtualNode;
   Root: PVirtualNode;
+  Node: PVirtualNode;
 begin
   Root := CreateDocumentNode();
   Node := CreateInfoNode(Root);
@@ -263,7 +262,7 @@ begin
     if Assigned(P) then
     begin
       P^.Id := 1;
-      P.Caption := 'Документ';
+      P.Caption := RC_DOCUMENT;
     end;
 
     Result := Node;
@@ -288,7 +287,7 @@ begin
       if Assigned(Node) then
       begin
         P^.Id := 2;
-        P^.Caption := 'Блок Info';
+        P^.Caption := RC_BLOCK_INFO;
       end;
       Result := Node;
     end
@@ -312,7 +311,7 @@ begin
     if Assigned(Node) then
     begin
       P^.Id := 3;
-      P^.Caption := 'Блок Paths';
+      P^.Caption := RC_BLOCK_PATHS;
     end;
   end
   else
@@ -332,7 +331,7 @@ begin
     if Assigned(Node) then
     begin
       P^.Id := 3;
-      P^.Caption := 'Блок Server';
+      P^.Caption := RC_BLOCK_SERVERS;
     end;
     Result := Node;
   end
@@ -355,7 +354,7 @@ begin
     if Assigned(Node) then
     begin
       P^.Id := 3;
-      P^.Caption := 'Блок Components';
+      P^.Caption := RC_BLOCK_COMPONENTS;
     end;
     Result := Node;
   end
@@ -378,7 +377,7 @@ begin
     if Assigned(Node) then
     begin
       P^.Id := 3;
-      P^.Caption := 'Блок Tags';
+      P^.Caption := RC_BLOCK_TAGS;
     end;
     Result := Node;
   end
