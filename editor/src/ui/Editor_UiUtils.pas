@@ -24,7 +24,7 @@ var
   Ext: string;
 begin
   Ext := ExtractFileExt(APath);
-  Result := Ext = 'json';
+  Result := Ext = '.json';
 end;
 
 end.
