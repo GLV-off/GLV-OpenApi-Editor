@@ -18,8 +18,12 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <DpiAware Value="True"/>
+        <ExecutionLevel Value="requireAdministrator"/>
       </XPManifest>
       <Icon Value="0"/>
+      <Resources Count="1">
+        <Resource_0 FileName="..\..\asset\Editor.ico" Type="ICON" ResourceName="EDITOR"/>
+      </Resources>
     </General>
     <BuildModes>
       <Item Name="Debug" Default="True"/>
@@ -32,7 +36,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames"/>
+            <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames;..\..\src\ui"/>
             <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\release"/>
           </SearchPaths>
           <CodeGeneration>
@@ -117,7 +121,12 @@
         <Filename Value="..\..\src\ui\frames\Editor_EditorFrame.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditorFrame"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\src\ui\Editor_UiUtils.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -129,7 +138,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\src"/>
-      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames"/>
+      <OtherUnitFiles Value="..\..\src\ui\forms;..\..\src;..\..\src\ui\model;..\..\src\ui\frames;..\..\src\ui"/>
       <UnitOutputDirectory Value="..\..\out\$(TargetCPU)-$(TargetOS)\debug"/>
     </SearchPaths>
     <Parsing>

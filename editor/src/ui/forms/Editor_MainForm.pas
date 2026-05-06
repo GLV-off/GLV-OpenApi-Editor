@@ -18,13 +18,29 @@ uses
   SynEdit,
   SynHighlighterJScript,
   Editor_UiTypes,
-  Editor_Cfg;
+  Editor_Cfg,
+  Editor_EditorFrame;
 
 type
   TOnException = procedure(const AException: Exception);
 
+  TEditorContext = class
+  strict private
+    FCfg: TCfg;
+    FOnException: TOnException;
+    FJsonDocument: TJSONObject;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure FreeJsonDocument;
+
+    property JsonDocument: TJSONObject read FJsonDocument write FJsonDocument;
+    property OnException: TOnException read FOnException write FOnException;
+    property Cfg: TCfg read FCfg write FCfg;
+  end;
+
   TMainForm = class(TForm)
-    MainEditor: TSynEdit;
     OpenDialog: TOpenDialog;
     SynJScriptSyn: TSynJScriptSyn;
     VST: TLazVirtualStringTree;
@@ -46,9 +62,9 @@ type
     procedure VSTFreeNode(Sender: TBaseVirtualTree;
                           Node: PVirtualNode);
   strict private
-    FOnException: TOnException;
-    FCfg: TCfg;
-    FJsonDocument: TJSONObject;
+    FEditorFrame: TEditorFrame;
+    FContext: TEditorContext;
+    function GetMainEditor: TSynEdit;
     procedure CreateMenu;
     procedure CreateTree;
     function CreateDocumentNode: PVirtualNode;
@@ -62,15 +78,12 @@ type
     procedure ExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
-    procedure DefaultOnException(const AEx: Exception);
     procedure DoOnException(const InE: Exception);
-    function FileSuported(const APath: string): Boolean;
-    procedure ShowFileNotSuported;
   public
     procedure OpenDocument(const APath: string);
     procedure OpenDocumentUnsafe(const APath: string);
     procedure SaveDocument(const APath: string);
-    property OnException: TOnException read FOnException write FOnException;
+    property MainEditor: TSynEdit read GetMainEditor;
   end;
 
 var
@@ -82,6 +95,7 @@ uses
   JsonParser,
   Editor_Env,
   Editor_Fonts,
+  Editor_UiUtils,
   Editor_Cfg_Ini;
 
 {$R *.lfm}
@@ -132,10 +146,31 @@ begin
   AItem.Add(Item);
 end;
 
+constructor TEditorContext.Create;
+begin
+  inherited Create;
+  FCfg := nil;
+  FOnException := nil;
+  FJsonDocument := TJSONObject.Create;
+end;
+
+destructor TEditorContext.Destroy;
+begin
+  FreeAndNil(FJsonDocument);
+  FOnException := nil;
+  FreeAndNil(FCfg);
+  inherited Destroy;
+end;
+
+procedure TEditorContext.FreeJsonDocument;
+begin
+  FreeAndNil(FJsonDocument);
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FJsonDocument := TJSONObject.Create();
-  FCfg := TIniCfg.Create(TEnv.ConfigFilepath);
+  FContext := TEditorContext.Create();
+  FContext.Cfg := TIniCfg.Create(TEnv.ConfigFilepath);
   CreateMenu();
   CreateTree();
   InitializeEditor();
@@ -143,9 +178,8 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FContext);
   FontUnload(TEnv.EditorFont);
-  FreeAndNil(FJsonDocument);
-  FreeAndNil(FCfg);
 end;
 
 procedure TMainForm.VSTGetNodeDataSize(Sender: TBaseVirtualTree;
@@ -183,6 +217,14 @@ procedure TMainForm.VSTFreeNode(Sender: TBaseVirtualTree;
 begin
 end;
 
+function TMainForm.GetMainEditor: TSynEdit;
+begin
+  if Assigned(FEditorFrame) then
+    Result := FEditorFrame.MainEditor
+  else
+    Result := nil;
+end;
+
 procedure TMainForm.CreateMenu;
 var
   MainMenuItem: TMenuItem;
@@ -213,7 +255,7 @@ var
   Node: PVirtualNode;
   P: PElement;
 begin
-  if Assigned(FJsonDocument) then
+  if Assigned(FContext.JsonDocument) then
   begin
     Node := VST.AddChild(nil, nil);
 
@@ -237,7 +279,7 @@ var
   JsonInfo: TJSONData;
 begin
   JsonInfo := nil;
-  if FJsonDocument.Find('info', JsonInfo) then
+  if FContext.JsonDocument.Find('info', JsonInfo) then
   begin
     if Assigned(JsonInfo) then
     begin
@@ -263,7 +305,7 @@ var
   Node: PVirtualNode;
   JsonPaths: TJSONData;
 begin
-  if FJsonDocument.Find('paths', JsonPaths) then
+  if FContext.JsonDocument.Find('paths', JsonPaths) then
   begin
     Node := VST.AddChild(AParent, nil);
     P := VST.GetNodeData(Node);
@@ -283,7 +325,7 @@ var
   Node: PVirtualNode;
   JsonServers: TJSONData;
 begin
-  if FJsonDocument.Find('servers', JsonServers) then
+  if FContext.JsonDocument.Find('servers', JsonServers) then
   begin
     Node := VST.AddChild(AParent, nil);
     P := VST.GetNodeData(Node);
@@ -306,7 +348,7 @@ var
   Node: PVirtualNode;
   JsonComponents: TJSONData;
 begin
-  if FJsonDocument.Find('components', JsonComponents) then
+  if FContext.JsonDocument.Find('components', JsonComponents) then
   begin
     Node := VST.AddChild(AParent, nil);
     P := VST.GetNodeData(Node);
@@ -329,7 +371,7 @@ var
   Node: PVirtualNode;
   JsonTags: TJSONData;
 begin
-  if FJsonDocument.Find('tags', JsonTags) then
+  if FContext.JsonDocument.Find('tags', JsonTags) then
   begin
     Node := VST.AddChild(AParent, nil);
     P := VST.GetNodeData(Node);
@@ -351,7 +393,10 @@ end;
 
 procedure TMainForm.InitializeEditor;
 begin
-  MainEditor.ClearAll();
+  FEditorFrame := TEditorFrame.Create(Self);
+  FEditorFrame.Align := alClient;
+  FEditorFrame.Parent := Self;
+  FEditorFrame.Clear();
 end;
 
 procedure TMainForm.ExitClick(Sender: TObject);
@@ -362,7 +407,7 @@ end;
 procedure TMainForm.OpenClick(Sender: TObject);
 begin
   OpenDialog.Title := 'Открыть файл';
-  OpenDialog.InitialDir := FCfg.LastOpenedFile;
+  OpenDialog.InitialDir := FContext.Cfg.LastOpenedFile;
   OpenDialog.Filter :=
     'Openapi (*.json)|*.json|Openapi (*.yaml)|*.yaml|Все файлы (*.*)|*.*';
   if OpenDialog.Execute then
@@ -377,28 +422,10 @@ begin
     SaveDocument(OpenDialog.Filename);
 end;
 
-procedure TMainForm.DefaultOnException(const AEx: Exception);
-begin
-  ShowMessage('Ошибка: ' + AEx.Message);
-end;
-
 procedure TMainForm.DoOnException(const InE: Exception);
 begin
-  if Assigned(FOnException) then
-    FOnException(InE);
-end;
-
-function TMainForm.FileSuported(const APath: string): Boolean;
-var
-  Ext: string;
-begin
-  Ext := ExtractFileExt(APath);
-  Result := Ext = 'json';
-end;
-
-procedure TMainForm.ShowFileNotSuported;
-begin
-  ShowMessage('Открываемый файл не поддерживается!');
+  if Assigned(FContext.OnException) then
+    FContext.OnException(InE);
 end;
 
 procedure TMainForm.OpenDocument(const APath: string);
@@ -417,12 +444,12 @@ var
   Stream: TStringStream;
   JsonElement: TJSONData;
 begin
-  FCfg.LastOpenedFile := APath;
+  FContext.Cfg.LastOpenedFile := APath;
 
   MainEditor.BeginUpdate();
   try
     ClearTree();
-    FreeAndNil(FJsonDocument);
+    FContext.FreeJsonDocument;
     MainEditor.ClearAll;
     try
       MainEditor.Lines.LoadFromFile(APath);
@@ -437,7 +464,7 @@ begin
       Stream.Position := 0;
       JsonElement := GetJSON(Stream);
       if Assigned(JsonElement) and JsonElement.InheritsFrom(TJSONObject) then
-        FJsonDocument := TJSONObject(JsonElement);
+        FContext.JsonDocument := TJSONObject(JsonElement);
     finally
       FreeAndNil(Stream);
     end;
@@ -450,7 +477,7 @@ end;
 
 procedure TMainForm.SaveDocument(const APath: string);
 begin
-  FCfg.LastOpenedFile := APath;
+  FContext.Cfg.LastOpenedFile := APath;
 
   if not MainEditor.Lines.Text.IsEmpty then;
   begin

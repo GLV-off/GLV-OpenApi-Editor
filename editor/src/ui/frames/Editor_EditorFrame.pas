@@ -17,12 +17,17 @@ type
   private
 
   public
-
+    procedure Clear;
   end;
 
 implementation
 
 {$R *.lfm}
+
+procedure TEditorFrame.Clear;
+begin
+  MainEditor.Clear;
+end;
 
 end.
 
